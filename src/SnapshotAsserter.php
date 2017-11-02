@@ -10,6 +10,10 @@ trait SnapshotAsserter {
 		$this->justSnapsDirectory = $dirName;
 	}
 
+	public function getSnapshotDirectory() {
+		return $this->justSnapsDirectory;
+	}
+
 	public function assertMatchesSnapshot($actual) {
 		$asserter = \JustSnaps\buildSnapshotAsserter($this->justSnapsDirectory);
 		$this->assertTrue($asserter->forTest($this->getName())->assertMatchesSnapshot($actual));

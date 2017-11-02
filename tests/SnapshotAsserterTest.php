@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PHPUnitJustSnaps\Tests;
+namespace PHPUnitJustSnaps;
 
 use JustSnaps\FileDriver;
 use JustSnaps\CreatedSnapshotException;
@@ -10,11 +10,11 @@ use PHPUnitJustSnaps\SnapshotAsserter;
 // TODO: why is autoload not working?
 require('src/SnapshotAsserter.php');
 
-class PHPUnitJustSnapsAssertTest extends \PHPUnit\Framework\TestCase {
+class SnapshotAsserterTest extends \PHPUnit\Framework\TestCase {
 	use SnapshotAsserter;
 
 	public function setUp() {
-		$this->snapshotDirectory = './tests/__snapshots__';
+		$this->snapshotDirectory = $this->getSnapshotDirectory();
 		$this->snapFileDriver = FileDriver::buildWithDirectory($this->snapshotDirectory);
 		$this->snapFileDriver->removeSnapshotForTest($this->getName());
 	}
