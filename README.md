@@ -36,4 +36,31 @@ Each serializer consists of two objects:
 1. A class implementing `SerializerTester` which has one function: `shouldSerialize(mixed $data): bool`. This function must return true if the serializer should modify the data.
 2. A class implementing `SerializerPrinter` which has one function: `serializeData(mixed $data): mixed`. This function can manipulate the data and then must return the new data which will be written to the snapshot file. Note that the data returned from `serializeData()` will still be passed through `json_encode()` prior to writing.
 
-Example coming soon...
+Here's an example of using a custom serializer to hide sensitive information.
+
+```php
+public function addSecretSerializer() {
+	$printer = new class implements SerializerPrinter {
+		public function serializeData($outputData) {
+			$outputData['secret'] = 'xxx';
+			return $outputData;
+		}
+	};
+	$tester = new class implements SerializerTester {
+		public function shouldSerialize($outputData): bool {
+			return is_array($outputData) && isset($outputData['secret']);
+		}
+	};
+	$this->addSnapshotSerializer(new Serializer($tester, $printer));
+}
+
+public function testDataHasNotChanged() {
+	$actual = [ 'foo' => 'bar', 'secret' => 'thisisasecretpassword' ];
+	$this->addSecretSerializer();
+	$this->assertMatchesSnapshot($actual);
+}
+```
+
+## Similar projects
+
+- [phpunit-snapshot-assertions](https://github.com/spatie/phpunit-snapshot-assertions)
