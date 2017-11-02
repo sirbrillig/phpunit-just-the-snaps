@@ -4,6 +4,8 @@ A snapshot testing library for PHPUnit
 
 Uses the generic snapshot library [just-the-snaps](https://github.com/sirbrillig/just-the-snaps).
 
+**Still under development! API may change!**
+
 ## Installation
 
 ```
