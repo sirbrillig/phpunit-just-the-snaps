@@ -1,6 +1,6 @@
 {
     "name": "sirbrillig/phpunit-just-the-snaps",
-    "description": "A snapshot testing library for PHPUnit",
+    "description": "A lightweight snapshot testing plugin for PHPUnit",
     "type": "library",
     "license": "MIT",
     "scripts": {
