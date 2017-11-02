@@ -14,13 +14,17 @@ class SnapshotAsserterTest extends \PHPUnit\Framework\TestCase {
 	use SnapshotAsserter;
 
 	public function setUp() {
-		$this->snapshotDirectory = $this->getSnapshotDirectory();
-		$this->snapFileDriver = FileDriver::buildWithDirectory($this->snapshotDirectory);
-		$this->snapFileDriver->removeSnapshotForTest($this->getName());
+		$this->setSnapshotDirectory('./tests/__snapshots__');
+		$this->removeSnapshot();
 	}
 
 	public function tearDown() {
-		$this->snapFileDriver->removeSnapshotForTest($this->getName());
+		$this->removeSnapshot();
+	}
+
+	public function removeSnapshot() {
+		$snapFileDriver = FileDriver::buildWithDirectory($this->getSnapshotDirectory());
+		$snapFileDriver->removeSnapshotForTest($this->getName());
 	}
 
 	public function createSnapshot($actual) {
@@ -48,5 +52,22 @@ class SnapshotAsserterTest extends \PHPUnit\Framework\TestCase {
 		$this->createSnapshot($actual);
 		$this->expectException(\PHPUnit\Framework\ExpectationFailedException::class);
 		$this->assertMatchesSnapshot($changed);
+	}
+
+	public function testHasSnapshotDirectory() {
+		$this->assertEquals('./tests/__snapshots__', $this->getSnapshotDirectory());
+	}
+
+	public function testAllowsChangingSnapshotDirectory() {
+		$this->setSnapshotDirectory('./tests/__othersnapshots__');
+		$this->assertEquals('./tests/__othersnapshots__', $this->getSnapshotDirectory());
+	}
+
+	public function testSnapshotDirectoryIsUsedForSnapshots() {
+		$this->setSnapshotDirectory('./tests/__othersnapshots__');
+		$actual = ['foo' => 'bar'];
+		$this->createSnapshot($actual);
+		$snapFileDriver = FileDriver::buildWithDirectory($this->getSnapshotDirectory());
+		$this->assertFileExists($snapFileDriver->getSnapshotFileName($this->getName()));
 	}
 }
