@@ -51,6 +51,10 @@ Each serializer consists of two objects:
 Here's an example of using a custom serializer to hide sensitive information.
 
 ```php
+use JustSnaps\SerializerPrinter;
+use JustSnaps\SerializerTester;
+use JustSnaps\Serializer;
+
 public function addSecretSerializer() {
 	$printer = new class implements SerializerPrinter {
 		public function serializeData($outputData) {
