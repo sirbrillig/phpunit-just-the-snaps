@@ -6,7 +6,9 @@ Uses the generic snapshot library [just-the-snaps](https://github.com/sirbrillig
 
 ## Installation
 
-Coming soon...
+```
+composer require --dev sirbrillig/phpunit-just-the-snaps
+```
 
 ## Usage
 
