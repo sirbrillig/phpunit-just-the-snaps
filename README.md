@@ -12,6 +12,16 @@ composer require --dev sirbrillig/phpunit-just-the-snaps
 
 ## Usage
 
+Include the trait `SnapshotAsserter` in your test class to get access to the methods of this package.
+
+```php
+use PHPUnitJustSnaps\SnapshotAsserter;
+
+class MyTest extends \PHPUnit\Framework\TestCase {
+	use SnapshotAsserter;
+}
+```
+
 For this example, assume we have a function called `getData()` which returns an array.
 
 ```php
