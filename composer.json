@@ -1,0 +1,28 @@
+{
+    "name": "sirbrillig/phpunit-just-the-snaps",
+    "description": "A snapshot testing library for PHPUnit",
+    "type": "library",
+    "license": "MIT",
+    "scripts": {
+        "test": "vendor/bin/phpunit --bootstrap vendor/autoload.php --verbose tests"
+    },
+    "autoload": {
+        "psr-0": {
+            "PHPUnitJustSnaps": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Payton Swick",
+            "email": "payton@foolord.com"
+        }
+    ],
+    "require": {
+        "sirbrillig/just-the-snaps": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.4",
+        "sirbrillig/phpcs-variable-analysis": "^1.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.4.3"
+    }
+}
