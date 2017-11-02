@@ -5,6 +5,9 @@ namespace PHPUnitJustSnaps;
 
 use JustSnaps\FileDriver;
 use JustSnaps\CreatedSnapshotException;
+use JustSnaps\SerializerPrinter;
+use JustSnaps\SerializerTester;
+use JustSnaps\Serializer;
 use PHPUnitJustSnaps\SnapshotAsserter;
 
 // TODO: why is autoload not working?
@@ -22,16 +25,31 @@ class SnapshotAsserterTest extends \PHPUnit\Framework\TestCase {
 		$this->removeSnapshot();
 	}
 
-	public function removeSnapshot() {
+	private function removeSnapshot() {
 		$snapFileDriver = FileDriver::buildWithDirectory($this->getSnapshotDirectory());
 		$snapFileDriver->removeSnapshotForTest($this->getName());
 	}
 
-	public function createSnapshot($actual) {
+	private function createSnapshot($actual) {
 		try {
 			$this->assertMatchesSnapshot($actual);
 		} catch (CreatedSnapshotException $err) {
 		}
+	}
+
+	private function addSecretSerializer() {
+		$printer = new class implements SerializerPrinter {
+			public function serializeData($outputData) {
+				$outputData['secret'] = 'xxx';
+				return $outputData;
+			}
+		};
+		$tester = new class implements SerializerTester {
+			public function shouldSerialize($outputData): bool {
+				return is_array($outputData) && isset($outputData['secret']);
+			}
+		};
+		$this->addSnapshotSerializer(new Serializer($tester, $printer));
 	}
 
 	public function testSkipsTestIfSnapshotDoesNotExist() {
@@ -69,5 +87,22 @@ class SnapshotAsserterTest extends \PHPUnit\Framework\TestCase {
 		$this->createSnapshot($actual);
 		$snapFileDriver = FileDriver::buildWithDirectory($this->getSnapshotDirectory());
 		$this->assertFileExists($snapFileDriver->getSnapshotFileName($this->getName()));
+	}
+
+	public function testAllowsAddingASerializer() {
+		$actual = [ 'foo' => 'bar', 'secret' => 'thisisasecretpassword' ];
+		$this->addSecretSerializer();
+		$this->createSnapshot($actual);
+		$this->assertMatchesSnapshot($actual);
+	}
+
+	public function testSerializersAreApplied() {
+		$actual = [ 'foo' => 'bar', 'secret' => 'thisisasecretpassword' ];
+		$this->addSecretSerializer();
+		$this->createSnapshot($actual);
+		$snapFileDriver = FileDriver::buildWithDirectory($this->getSnapshotDirectory());
+		$snapshotContents = file_get_contents($snapFileDriver->getSnapshotFileName($this->getName()));
+		$this->assertThat($snapshotContents, $this->stringContains('xxx'));
+		$this->assertThat($snapshotContents, $this->logicalNot($this->stringContains('thisisasecretpassword')));
 	}
 }
